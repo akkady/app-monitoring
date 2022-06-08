@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: Solr JVM
+    type: influxdb
+    access: proxy
+    database: solr
+    user: admin
+    password: admin123
+    url: http://influx:8086
