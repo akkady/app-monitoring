@@ -5,6 +5,7 @@ datasources:
     type: influxdb
     access: proxy
     database: jmeter
-    user: admin
-    password: admin123
     url: http://influx:8086
+    user: $GF_SECURITY_ADMIN_USER
+    secureJsonData:
+      password: $GF_SECURITY_ADMIN_PASSWORD

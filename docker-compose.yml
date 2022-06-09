@@ -1,58 +1,49 @@
 version: '3.5'
 
 services:
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    env_file:
+      - .env
+    entrypoint: ["./entrypoint.sh"]
+    restart: on-failure:10
+    ports:
+      - ${INFLUXDB_PORT}:8086
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+ 
   telegraf:
     image: telegraf
     container_name: telegraf
     restart: always
     volumes:
-    - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     depends_on:
       - influxdb
     links:
       - influxdb
-    ports:
-    - '8125:8125'
-
-  influxdb:
-    image: influxdb
-    container_name: influx
-    restart: always
     env_file:
-      - ./influx/influxdb.env
+      - .env
     ports:
-      - '8086:8086'
-    volumes:
-      - influxdb_data:/var/lib/influxdb
-    environment:
-      ## Username to set for the admin user (Required)
-      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
-
-      ## Password to set for the admin user (Required)
-      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
-
-      ## Name to set for the initial organization (Required)
-      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
-
-      ## Name to set for the initial bucket (Required)
-      - DOCKER_INFLUXDB_INIT_BUCKET=¤{INFLUXDB_INIT_BUCKET}
-
-      ##  Duration for the initial bucket’s retention period. If not set, the initial bucket will retain data forever
-      ##  INFLUXDB_RETENTION
-
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - '8125:8125'
 
   grafana:
     build: './grafana'
     container_name: 'grafana'
     ports:
-      - '3000:3000'
+      - ${GRAFANA_PORT}:3000
     depends_on:
-        - influxdb
+      - influxdb
     env_file:
-      - ./grafana/grafana.env
+     - .env
     volumes:
         - grafana_data:/var/lib/grafana
+        - ./grafana/config.ini:/etc/grafana/grafana.ini:ro
+        - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+        - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+        - ./grafana/dashboards:/var/lib/grafana/dashboards:rw
 
 volumes:
   grafana_data: {}

@@ -2,7 +2,23 @@
 apiVersion: 1
  
 providers:
-  - name: 'Default'
-    folder: 'Default'
+  #hybris
+  - name: 'hybris'
+    folder: 'Hybris'
     options:
-      path: /var/lib/grafana/dashboards/default
+      path: /var/lib/grafana/dashboards/hybris
+  #Jmeter
+  - name: 'jmeter'
+    folder: 'JMeter'
+    options:
+      path: /var/lib/grafana/dashboards/jmeter
+  #MS SQL Server
+  - name: 'mssql'
+    folder: 'SQL SERVER'
+    options:
+      path: /var/lib/grafana/dashboards/mssql
+  #solr
+  - name: 'solr'
+    folder: 'Solr'
+    options:
+      path: /var/lib/grafana/dashboards/solr

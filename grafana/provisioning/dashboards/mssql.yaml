@@ -1,9 +1,0 @@
-
-# grafana/provisioning/dashboards/dashboard.yml
-apiVersion: 1
- 
-providers:
-  - name: 'Default'
-    folder: 'SQL SERVER'
-    options:
-      path: /var/lib/grafana/dashboards/mssql
