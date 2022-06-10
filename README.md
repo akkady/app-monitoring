@@ -40,9 +40,6 @@ Grafana is a web application for visualizing and analyzing metrics. It is a powe
 
 #### **Architecture**
 
-- **general architecture**
-
-  ```
 
 - **Telegraf**
 
@@ -52,7 +49,7 @@ Grafana is a web application for visualizing and analyzing metrics. It is a powe
     ```
 the telegraf.conf file is the configuration file for telegraf that contains all the information about the telegraf server and the plugins that will be used to collect the data from the different systems and send it to the influxdb server.
 
-example of telegraf.conf file
+example of what we can add in telegraf.conf file
 
 ```yml
     [[outputs.influxdb_v2]]
@@ -85,6 +82,18 @@ ADD ./grafana/provisioning /etc/grafana/provisioning
 ```
 this will copy the ```provisioning``` folder to the ```/etc/grafana/provisioning``` folder in the container.
 
+```dashboards``` folder contains all the dashboards that we will use to visualize the metrics. 
+the dashbord files are in ```json``` format.
+
+We recomend you to gather all the dashboards you need in the ```dashboards``` folder and copy them to the ```/etc/grafana/dashboards``` folder in the container.
+
+```dockerfile
+ADD ./dashboards /var/lib/grafana/dashboards
+```
+this command will mount the ```dashboards``` folder to the ```/var/lib/grafana/dashboards``` folder in the container.
+
+```datasources``` folder contains all the datasources that we will use to visualize the metrics.
+```datasources``` folder contains all the datasources that we will use to visualize the metrics.
 
 
 
