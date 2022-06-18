@@ -5,7 +5,14 @@ datasources:
     type: influxdb
     access: proxy
     database: jmeter
-    url: http://influx:8086
-    user: $GF_SECURITY_ADMIN_USER
+    url: http://influxdb:8086
+    user: $DOCKER_INFLUXDB_INIT_USERNAME
+    basicAuth: false
     secureJsonData:
-      password: $GF_SECURITY_ADMIN_PASSWORD
+      token: $DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+      password: $DOCKER_INFLUXDB_INIT_PASSWORD
+    jsonData:
+      version: Flux
+      organization: $DOCKER_INFLUXDB_INIT_ORG
+      defaultBucket: $DOCKER_INFLUXDB_JMETER_BUCKETS
+      tlsSkipVerify: true
