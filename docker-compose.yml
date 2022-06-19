@@ -3,7 +3,7 @@ version: '3.5'
 services:
 
   influxdb:
-    image: influxdb:latest
+    image: influxdb
     container_name: influxdb
     volumes:
       - influxdb_data:/var/lib/influxdb2
@@ -28,8 +28,18 @@ services:
       - influxdb
     env_file:
       - .env
-    ports:
-      - '8125:8125'
+  mssql_agent:
+    image: telegraf
+    container_name: mssql_agent
+    restart: always
+    volumes:
+      - ./mssql_agent/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    env_file:
+      - .env
 
   grafana:
     build: './grafana'
