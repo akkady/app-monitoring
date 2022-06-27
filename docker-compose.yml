@@ -15,25 +15,13 @@ services:
     restart: on-failure:10
     ports:
       - ${INFLUXDB_PORT}:8086
- 
-  telegraf:
-    image: telegraf
-    container_name: telegraf
-    restart: always
-    volumes:
-      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-    depends_on:
-      - influxdb
-    links:
-      - influxdb
-    env_file:
-      - .env
+  
   mssql_agent:
     image: telegraf
     container_name: mssql_agent
     restart: always
     volumes:
-      - ./mssql_agent/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - ./agents/mssql_agent/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     depends_on:
       - influxdb
     links:

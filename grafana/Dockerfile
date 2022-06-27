@@ -6,3 +6,4 @@ ADD ./dashboards/mssql /var/lib/grafana/dashboards/mssql
 ADD ./dashboards/solr /var/lib/grafana/dashboards/solr
 ADD ./dashboards/jmeter /var/lib/grafana/dashboards/jmeter
 ADD ./dashboards/hybris /var/lib/grafana/dashboards/hybris
+ADD ./plugins /var/lib/grafana/plugins
