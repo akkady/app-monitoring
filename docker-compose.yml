@@ -28,6 +28,18 @@ services:
       - influxdb
     env_file:
       - .env
+  solr_agent:
+    image: telegraf
+    container_name: solr_agent
+    restart: always
+    volumes:
+      - ./agents/solr_agent/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    env_file:
+      - .env
 
   grafana:
     build: './grafana'
