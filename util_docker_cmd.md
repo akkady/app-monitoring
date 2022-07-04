@@ -36,4 +36,4 @@ To clean up as much as possible excluding components that are in use, run this c
 
 ### A Docker Cleanup Guide
 
-https://www.freecodecamp.org/news/how-to-remove-all-docker-images-a-docker-cleanup-guide/
+[https://www.freecodecamp.org/news/how-to-remove-all-docker-images-a-docker-cleanup-guide/]()
