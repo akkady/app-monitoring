@@ -40,6 +40,18 @@ services:
       - influxdb
     env_file:
       - .env
+  hybris_agent:
+    image: telegraf
+    container_name: hybris_agent
+    restart: always
+    volumes:
+      - ./agents/hybris_agent/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    env_file:
+      - .env
 
   grafana:
     build: './grafana'

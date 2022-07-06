@@ -6931,7 +6931,10 @@
     "refresh": false,
     "schemaVersion": 36,
     "style": "dark",
-    "tags": [],
+    "tags": [
+      "flux",
+      "jmeter"
+    ],
     "templating": {
       "list": [
         {
@@ -7046,7 +7049,7 @@
       ]
     },
     "timezone": "browser",
-    "title": "Load Test Dashboard Copy",
+    "title": "Load Test Dashboard",
     "uid": "TPS2Jne7k",
     "version": 1,
     "weekStart": ""

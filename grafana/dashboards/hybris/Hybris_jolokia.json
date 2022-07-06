@@ -26,15 +26,16 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 8991,
   "graphTooltip": 0,
-  "iteration": 1654693796433,
+  "id": 11,
+  "iteration": 1657113531411,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "collapsed": false,
       "datasource": {
-        "type": "influxdb",
-        "uid": "cStNNolnz"
+        "type": "datasource",
+        "uid": "grafana"
       },
       "gridPos": {
         "h": 1,
@@ -44,13 +45,22 @@
       },
       "id": 25,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Overview ",
       "type": "row"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "doy-UHXnz"
+        "uid": "$Database"
       },
       "fieldConfig": {
         "defaults": {
@@ -87,8 +97,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
+        "h": 4,
+        "w": 3,
         "x": 0,
         "y": 1
       },
@@ -109,13 +119,12 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "targets": [
         {
           "alias": "",
           "datasource": {
-            "type": "influxdb",
-            "uid": "doy-UHXnz"
+            "uid": "$Database"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -135,7 +144,7 @@
           "measurement": "system",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"system\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"uptime\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"system\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"uptime\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -162,12 +171,13 @@
         }
       ],
       "title": "System Uptime",
+      "transformations": [],
       "type": "stat"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
+        "uid": "$Database"
       },
       "fieldConfig": {
         "defaults": {
@@ -199,17 +209,17 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "ms"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 4,
+        "h": 4,
+        "w": 3,
+        "x": 3,
         "y": 1
       },
-      "id": 82,
+      "id": 75,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -226,59 +236,31 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "targets": [
         {
-          "alias": "",
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "system",
-          "orderByTime": "ASC",
-          "policy": "default",
+          "hide": false,
           "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"jvm_runtime\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Uptime\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "uptime"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
+          "refId": "A"
         }
       ],
       "title": "JVM Uptime",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "type": "stat"
     },
     {
@@ -303,7 +285,6 @@
               "type": "special"
             }
           ],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -312,12 +293,12 @@
                 "value": null
               },
               {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 5
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
               },
               {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 19
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 5
               }
             ]
           },
@@ -326,19 +307,19 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 8,
+        "h": 4,
+        "w": 3,
+        "x": 6,
         "y": 1
       },
-      "id": 21,
+      "id": 19,
       "links": [],
       "maxDataPoints": 100,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
             "mean"
@@ -346,15 +327,13 @@
           "fields": "",
           "values": false
         },
-        "text": {},
-        "textMode": "value_and_name"
+        "textMode": "auto"
       },
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "cStNNolnz"
+            "uid": "$Database"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -374,7 +353,245 @@
           "measurement": "processes",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.GcThreadCount\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"processes\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"zombies\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "zombies"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "EC2_IPADDRESS",
+              "operator": "=~",
+              "value": "/^$IP$/"
+            }
+          ]
+        }
+      ],
+      "title": "Zombies",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "$Database"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 9,
+        "y": 1
+      },
+      "id": 20,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "$Database"
+          },
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "$Interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "processes",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"processes\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"total\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "total"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "EC2_IPADDRESS",
+              "operator": "=~",
+              "value": "/^$IP$/"
+            }
+          ]
+        }
+      ],
+      "title": "Processes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "$Database"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 12,
+        "y": 1
+      },
+      "id": 21,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "$Database"
+          },
+          "dsType": "influxdb",
+          "groupBy": [
+            {
+              "params": [
+                "$Interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "processes",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"processes\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"total_threads\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -406,7 +623,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
+        "uid": "$Database"
       },
       "fieldConfig": {
         "defaults": {
@@ -448,9 +665,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 12,
+        "h": 4,
+        "w": 3,
+        "x": 15,
         "y": 1
       },
       "id": 2,
@@ -468,12 +685,11 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -493,7 +709,7 @@
           "measurement": "cpu",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jmeter3\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"cpu\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"usage_system\")\r\n  |> filter(fn: (r) => r[\"cpu\"] == \"cpu-total\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"cpu\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"usage_system\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -532,12 +748,24 @@
         }
       ],
       "title": "CPU Usage",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "type": "gauge"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "doy-UHXnz"
+        "uid": "$Database"
       },
       "fieldConfig": {
         "defaults": {
@@ -579,9 +807,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 16,
+        "h": 4,
+        "w": 3,
+        "x": 18,
         "y": 1
       },
       "id": 3,
@@ -599,12 +827,11 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "doy-UHXnz"
+            "uid": "$Database"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -624,7 +851,7 @@
           "measurement": "mem",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mem\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"used_percent\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mem\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"used_percent\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -699,9 +926,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 20,
+        "h": 4,
+        "w": 3,
+        "x": 21,
         "y": 1
       },
       "id": 22,
@@ -711,7 +938,7 @@
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
-            "count"
+            "mean"
           ],
           "fields": "",
           "values": false
@@ -719,12 +946,11 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "targets": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "cStNNolnz"
+            "uid": "$Database"
           },
           "dsType": "influxdb",
           "groupBy": [
@@ -744,7 +970,7 @@
           "measurement": "swap",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jmeter3\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"swap\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"used_percent\")\r\n",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"swap\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"used_percent\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -776,18 +1002,27 @@
     {
       "collapsed": false,
       "datasource": {
-        "type": "influxdb",
-        "uid": "cStNNolnz"
+        "type": "datasource",
+        "uid": "grafana"
       },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 5
       },
       "id": 46,
       "panels": [],
-      "title": "JVM Stats",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "JVM Stats ",
       "type": "row"
     },
     {
@@ -799,7 +1034,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -807,7 +1042,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 7
+        "y": 6
       },
       "hiddenSeries": false,
       "id": 35,
@@ -820,7 +1055,9 @@
         "hideZero": false,
         "max": true,
         "min": true,
-        "show": true,
+        "show": false,
+        "sort": "current",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -832,7 +1069,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -842,195 +1079,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Heap Memory - Init",
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
           "hide": false,
-          "measurement": "java_memory",
-          "orderByTime": "ASC",
-          "policy": "default",
           "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_memory\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"HeapMemoryUsage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
-          "rawQuery": false,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "HeapMemoryUsage.init"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
-        },
-        {
-          "alias": "Heap Memory - Committed",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "java_memory",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "D",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "HeapMemoryUsage.committed"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
-        },
-        {
-          "alias": "Heap Memory - Used",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "java_memory",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "HeapMemoryUsage.used"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
-        },
-        {
-          "alias": "Heap Memory - Max",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "java_memory",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "HeapMemoryUsage.max"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
+          "refId": "A"
         }
       ],
       "thresholds": [],
@@ -1041,6 +1096,18 @@
         "sort": 0,
         "value_type": "individual"
       },
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": false
+          }
+        }
+      ],
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1049,11 +1116,13 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:291",
           "format": "decbytes",
           "logBase": 1,
           "show": true
         },
         {
+          "$$hashKey": "object:292",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -1072,7 +1141,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1080,7 +1149,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 6
       },
       "hiddenSeries": false,
       "id": 70,
@@ -1092,7 +1161,8 @@
         "hideEmpty": true,
         "max": true,
         "min": true,
-        "show": true,
+        "rightSide": false,
+        "show": false,
         "total": false,
         "values": true
       },
@@ -1104,7 +1174,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1116,8 +1186,7 @@
         {
           "alias": "Non-Heap Memory - Init",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1137,7 +1206,7 @@
           "measurement": "java_memory",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_memory\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"NonHeapMemoryUsage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_memory\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"NonHeapMemoryUsage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "rawQuery": false,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1166,8 +1235,7 @@
         {
           "alias": "Non-Heap Memory - Committed",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1213,8 +1281,7 @@
         {
           "alias": "Non-Heap Memory - Used",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1260,8 +1327,7 @@
         {
           "alias": "Non-Heap Memory - Max",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1313,6 +1379,19 @@
         "sort": 0,
         "value_type": "individual"
       },
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "",
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": false
+          }
+        }
+      ],
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1321,11 +1400,13 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:152",
           "format": "decbytes",
           "logBase": 1,
           "show": true
         },
         {
+          "$$hashKey": "object:153",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -1342,36 +1423,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionCount {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps MarkSweep"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionCount {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Scavenge"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1379,7 +1431,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 67,
@@ -1405,7 +1457,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1417,8 +1469,7 @@
         {
           "alias": "GC Collection Count - $tag_name",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1432,7 +1483,7 @@
           "measurement": "java_garbage_collector",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_garbage_collector\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"CollectionCount\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_garbage_collector\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"CollectionCount\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1463,6 +1514,18 @@
         "sort": 0,
         "value_type": "individual"
       },
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1471,7 +1534,7 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:654",
+          "$$hashKey": "object:262",
           "decimals": 0,
           "format": "short",
           "label": "",
@@ -1480,7 +1543,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:655",
+          "$$hashKey": "object:263",
           "format": "short",
           "logBase": 1,
           "show": false
@@ -1497,36 +1560,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionTime {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS MarkSweep"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionTime {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS Scavenge"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1534,7 +1568,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 15
       },
       "hiddenSeries": false,
       "id": 69,
@@ -1560,7 +1594,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.5",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1572,8 +1606,7 @@
         {
           "alias": "GC Collection Time - $tag_name",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1587,7 +1620,7 @@
           "measurement": "java_garbage_collector",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_garbage_collector\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"CollectionTime\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_garbage_collector\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"CollectionTime\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -1618,6 +1651,18 @@
         "sort": 0,
         "value_type": "individual"
       },
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": true
+          }
+        }
+      ],
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1626,7 +1671,7 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:192",
+          "$$hashKey": "object:340",
           "decimals": 0,
           "format": "ms",
           "logBase": 1,
@@ -1634,7 +1679,7 @@
           "show": true
         },
         {
-          "$$hashKey": "object:193",
+          "$$hashKey": "object:341",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -1651,48 +1696,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Eden Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Eden Space"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Old Gen\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Old Gen"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CollectionUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Survivor Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Survivor Space"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1700,7 +1704,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 25
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 71,
@@ -1711,7 +1715,7 @@
         "hideEmpty": true,
         "max": true,
         "min": true,
-        "show": true,
+        "show": false,
         "total": false,
         "values": true
       },
@@ -1723,7 +1727,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1735,8 +1739,7 @@
         {
           "alias": "Collection Usage - Commited",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -1756,7 +1759,7 @@
           "measurement": "java_memory_pool",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"jvm_memory_pool\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"CollectionUsage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"jvm_memory_pool\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"CollectionUsage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
@@ -1764,150 +1767,6 @@
               {
                 "params": [
                   "CollectionUsage.committed"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
-        },
-        {
-          "alias": "Collection Usage - Init",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "java_memory_pool",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "CollectionUsage.init"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
-        },
-        {
-          "alias": "Collection Usage - Max",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "java_memory_pool",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "CollectionUsage.max"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "EC2_IPADDRESS",
-              "operator": "=~",
-              "value": "/^$IP$/"
-            }
-          ]
-        },
-        {
-          "alias": "Collection Usage - Used",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "none"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "java_memory_pool",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "D",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "CollectionUsage.used"
                 ],
                 "type": "field"
               },
@@ -1934,6 +1793,18 @@
         "sort": 0,
         "value_type": "individual"
       },
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "mode": "reduceRow",
+            "reduce": {
+              "reducer": "sum"
+            },
+            "replaceFields": false
+          }
+        }
+      ],
       "type": "graph",
       "xaxis": {
         "mode": "time",
@@ -1942,13 +1813,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:89",
+          "$$hashKey": "object:422",
           "format": "bytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:90",
+          "$$hashKey": "object:423",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -1965,84 +1836,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"Code Cache\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Code Cache"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"Compressed Class Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Compressed Class Space"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"Metaspace\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Metaspace"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Eden Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS Eden Space"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Old Gen\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Old Gen"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Survivor Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Survivor Space"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2050,7 +1844,7 @@
         "h": 9,
         "w": 8,
         "x": 8,
-        "y": 25
+        "y": 24
       },
       "hiddenSeries": false,
       "id": 72,
@@ -2058,10 +1852,13 @@
         "alignAsTable": true,
         "avg": true,
         "current": true,
-        "hideEmpty": true,
+        "hideEmpty": false,
+        "hideZero": false,
         "max": true,
         "min": true,
-        "show": true,
+        "rightSide": false,
+        "show": false,
+        "sideWidth": 100,
         "total": false,
         "values": true
       },
@@ -2073,7 +1870,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2085,8 +1882,7 @@
         {
           "alias": "Peak Usage - Commited",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2134,8 +1930,7 @@
         {
           "alias": "Peak Usage - Init",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2182,8 +1977,7 @@
         {
           "alias": "Peak Usage - Max",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2230,8 +2024,7 @@
         {
           "alias": "Peak Usage - Used",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2292,13 +2085,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:506",
+          "$$hashKey": "object:504",
           "format": "bytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:507",
+          "$$hashKey": "object:505",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -2315,84 +2108,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"Code Cache\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Code Cache"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"Compressed Class Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Compressed Class Space"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"Metaspace\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Metaspace"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Eden Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS Eden Space"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Old Gen\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Old Gen"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "PeakUsage.used {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", pool_name=\"PS Survivor Space\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Survivor Space"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2400,10 +2116,10 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 25
+        "y": 24
       },
       "hiddenSeries": false,
-      "id": 78,
+      "id": 73,
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -2411,7 +2127,7 @@
         "hideEmpty": true,
         "max": true,
         "min": true,
-        "show": true,
+        "show": false,
         "total": false,
         "values": true
       },
@@ -2423,7 +2139,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2433,10 +2149,9 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Peak Usage - Commited",
+          "alias": "Usage - Commited",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2456,14 +2171,14 @@
           "measurement": "java_memory_pool",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"jvm_memory_pool\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Usage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"jvm_memory_pool\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"Usage.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "PeakUsage.committed"
+                  "Usage.committed"
                 ],
                 "type": "field"
               },
@@ -2482,10 +2197,9 @@
           ]
         },
         {
-          "alias": "Peak Usage - Init",
+          "alias": "Usage - Init",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2511,7 +2225,7 @@
             [
               {
                 "params": [
-                  "PeakUsage.init"
+                  "Usage.init"
                 ],
                 "type": "field"
               },
@@ -2530,10 +2244,9 @@
           ]
         },
         {
-          "alias": "Peak Usage - Max",
+          "alias": "Usage - Max",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2559,7 +2272,7 @@
             [
               {
                 "params": [
-                  "PeakUsage.max"
+                  "Usage.max"
                 ],
                 "type": "field"
               },
@@ -2578,10 +2291,9 @@
           ]
         },
         {
-          "alias": "Peak Usage - Used",
+          "alias": "Usage - Used",
           "datasource": {
-            "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2607,7 +2319,7 @@
             [
               {
                 "params": [
-                  "PeakUsage.used"
+                  "Usage.used"
                 ],
                 "type": "field"
               },
@@ -2642,13 +2354,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:506",
+          "$$hashKey": "object:920",
           "format": "bytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:507",
+          "$$hashKey": "object:921",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -2665,36 +2377,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.GcThreadCount {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS MarkSweep"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.GcThreadCount {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Scavenge"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2702,18 +2385,18 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 33
       },
       "hiddenSeries": false,
       "id": 37,
       "legend": {
-        "alignAsTable": false,
+        "alignAsTable": true,
         "avg": true,
         "current": true,
         "hideEmpty": true,
         "max": true,
         "min": true,
-        "show": true,
+        "show": false,
         "total": false,
         "values": true
       },
@@ -2725,7 +2408,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
+      "pluginVersion": "9.0.2",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2735,10 +2418,98 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Daemon Thread Count",
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
+          },
+          "hide": false,
+          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.GcThreadCount\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Thread Count",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:985",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:986",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "$Database"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 33
+      },
+      "hiddenSeries": false,
+      "id": 74,
+      "legend": {
+        "alignAsTable": false,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": true,
+        "show": false,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "alias": "Loaded Class Count",
+          "datasource": {
+            "uid": "$Database"
           },
           "groupBy": [
             {
@@ -2755,17 +2526,111 @@
             }
           ],
           "hide": false,
-          "measurement": "java_threading",
+          "measurement": "java_class_loading",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.GcThreadCount\")\r\n",
+          "query": "from(bucket: v.bucket )\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Compressed Class Space.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "DaemonThreadCount"
+                  "LoadedClassCount"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "EC2_IPADDRESS",
+              "operator": "=~",
+              "value": "/^$IP$/"
+            }
+          ]
+        },
+        {
+          "alias": "Total Loaded Class Count",
+          "datasource": {
+            "uid": "$Database"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": true,
+          "measurement": "java_class_loading",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "TotalLoadedClassCount"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "EC2_IPADDRESS",
+              "operator": "=~",
+              "value": "/^$IP$/"
+            }
+          ]
+        },
+        {
+          "alias": "Unloaded Class Count",
+          "datasource": {
+            "uid": "$Database"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "none"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "java_class_loading",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "UnloadedClassCount"
                 ],
                 "type": "field"
               },
@@ -2786,7 +2651,7 @@
       ],
       "thresholds": [],
       "timeRegions": [],
-      "title": "Thread Count",
+      "title": "Class Count",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2800,16 +2665,16 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:575",
+          "$$hashKey": "object:1160",
           "format": "short",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:576",
+          "$$hashKey": "object:1161",
           "format": "short",
           "logBase": 1,
-          "show": true
+          "show": false
         }
       ],
       "yaxis": {
@@ -2819,18 +2684,27 @@
     {
       "collapsed": false,
       "datasource": {
-        "type": "influxdb",
-        "uid": "cStNNolnz"
+        "type": "datasource",
+        "uid": "grafana"
       },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 42
       },
       "id": 33,
       "panels": [],
-      "title": "JVM - Last GC Info - $Server - $IP",
+      "targets": [
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "grafana"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "JVM - Last GC Info ",
       "type": "row"
     },
     {
@@ -2840,36 +2714,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Eden Space.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS Scavenge"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Eden Space.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS MarkSweep"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2877,18 +2722,20 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 44
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 77,
+      "id": 49,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": true,
+        "show": false,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -2898,8 +2745,8 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 2,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -2910,9 +2757,10 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
-          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Eden Space.committed\" )\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "hide": false,
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Eden Space.committed\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Eden Space.max\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Eden Space.used\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageBeforeGc.PS Eden Space.committed\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -2932,13 +2780,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:465",
-          "format": "short",
+          "$$hashKey": "object:1310",
+          "format": "decbytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:466",
+          "$$hashKey": "object:1311",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -2955,36 +2803,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps MarkSweep"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Scavenge"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2992,18 +2811,20 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 44
+        "y": 43
       },
       "hiddenSeries": false,
-      "id": 79,
+      "id": 43,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": true,
+        "show": false,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -3013,8 +2834,8 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 2,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -3025,9 +2846,10 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.committed\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "hide": false,
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.committed\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.init\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.max\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Survivor Space.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -3047,13 +2869,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:465",
-          "format": "short",
+          "$$hashKey": "object:1388",
+          "format": "decbytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:466",
+          "$$hashKey": "object:1389",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -3070,36 +2892,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS Scavenge"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "PS MarkSweep"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -3107,16 +2900,107 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 53
+        "y": 52
       },
       "hiddenSeries": false,
-      "id": 80,
+      "id": 50,
       "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": true,
+        "show": false,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "$Database"
+          },
+          "hide": false,
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Old Gen.committed\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Old Gen.init\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Old Gen.max\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.PS Old Gen.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Tenured Space",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1466",
+          "format": "decbytes",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1467",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "$Database"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "hiddenSeries": false,
+      "id": 44,
+      "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
+        "hideEmpty": true,
         "max": false,
         "min": false,
-        "show": true,
+        "show": false,
         "total": false,
         "values": false
       },
@@ -3128,8 +3012,8 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 2,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -3140,9 +3024,99 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
-          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.committed\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "hide": false,
+          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Metaspace.committed\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Metaspace.init\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Metaspace.max\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Metaspace.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Metaspace",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1545",
+          "format": "decbytes",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1546",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "influxdb",
+        "uid": "$Database"
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 61
+      },
+      "hiddenSeries": false,
+      "id": 47,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": true,
+        "show": false,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "$Database"
+          },
+          "hide": false,
+          "query": "from(bucket: \"hybris\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.committed\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.init\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.max\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Code Cache.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -3162,13 +3136,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:465",
-          "format": "short",
+          "$$hashKey": "object:1706",
+          "format": "decbytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:466",
+          "$$hashKey": "object:1707",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -3185,36 +3159,7 @@
       "dashes": false,
       "datasource": {
         "type": "influxdb",
-        "uid": "Ms6TKKunz"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageBeforeGc.Compressed Class Space.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS MarkSweep\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps MarkSweep"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LastGcInfo.LastGcInfo.memoryUsageBeforeGc.Compressed Class Space.committed {host=\"RABC5FVSG3\", jolokia_agent_url=\"https://localhost:9002/jolokia\", name=\"PS Scavenge\"}"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Ps Scavenge"
-              }
-            ]
-          }
-        ]
+        "uid": "$Database"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -3222,18 +3167,20 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 53
+        "y": 61
       },
       "hiddenSeries": false,
-      "id": 81,
+      "id": 48,
       "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
+        "alignAsTable": false,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "max": true,
+        "min": true,
+        "show": false,
         "total": false,
-        "values": false
+        "values": true
       },
       "lines": true,
       "linewidth": 1,
@@ -3243,8 +3190,8 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "8.5.0",
-      "pointradius": 2,
+      "pluginVersion": "9.0.2",
+      "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -3255,9 +3202,10 @@
         {
           "datasource": {
             "type": "influxdb",
-            "uid": "Ms6TKKunz"
+            "uid": "$Database"
           },
-          "query": "from(bucket: \"jvm\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageBeforeGc.Compressed Class Space.committed\" )\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
+          "hide": false,
+          "query": "from(bucket: v.bucket)\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"java_last_garbage_collection\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Compressed Class Space.committed\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Compressed Class Space.init\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Compressed Class Space.max\" or r[\"_field\"] == \"LastGcInfo.LastGcInfo.memoryUsageAfterGc.Compressed Class Space.used\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\r\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -3277,13 +3225,13 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:465",
-          "format": "short",
+          "$$hashKey": "object:1784",
+          "format": "decbytes",
           "logBase": 1,
           "show": true
         },
         {
-          "$$hashKey": "object:466",
+          "$$hashKey": "object:1785",
           "format": "short",
           "logBase": 1,
           "show": true
@@ -3297,7 +3245,12 @@
   "refresh": "1m",
   "schemaVersion": 36,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "Telegraf",
+    "Jolokia",
+    "JVM",
+    "Flux"
+  ],
   "templating": {
     "list": [
       {
@@ -3312,70 +3265,11 @@
         "name": "Database",
         "options": [],
         "query": "influxdb",
+        "queryValue": "",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
-      },
-      {
-        "current": {
-          "isNone": true,
-          "selected": false,
-          "text": "None",
-          "value": ""
-        },
-        "datasource": {
-          "type": "influxdb",
-          "uid": "Ms6TKKunz"
-        },
-        "definition": "",
-        "error": {
-          "message": "Datasource Ms6TKKunz was not found"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "hostname",
-        "options": [],
-        "query": "SHOW TAG VALUES FROM cpu WITH KEY = \"EC2_HOSTNAME\"",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 2,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-        "current": {
-          "isNone": true,
-          "selected": false,
-          "text": "None",
-          "value": ""
-        },
-        "datasource": {
-          "type": "influxdb",
-          "uid": "Ms6TKKunz"
-        },
-        "definition": "",
-        "error": {
-          "message": "Datasource Ms6TKKunz was not found"
-        },
-        "hide": 2,
-        "includeAll": false,
-        "multi": false,
-        "name": "IP",
-        "options": [],
-        "query": "SHOW TAG VALUES FROM cpu WITH KEY = \"EC2_IPADDRESS\" WHERE \"EC2_HOSTNAME\"=~/^$hostname$/",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 2,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
       },
       {
         "auto": true,
@@ -3463,7 +3357,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -3492,8 +3386,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "Hybris using jolokia",
-  "uid": "noTITGj7k",
-  "version": 1,
+  "title": "JVM Metrics - Jolokia 2",
+  "uid": "CmN88ZAB2",
+  "version": 8,
   "weekStart": ""
 }
